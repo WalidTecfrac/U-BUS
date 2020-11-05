@@ -4,8 +4,8 @@
   "private": true,
   "description": "test",
   "author": {
-    "email": "test",
-    "name": "test"
+    "email": "taxi@tecfrac.com",
+    "name": "taxiservicepeople"
   },
   "scripts": {
     "serve": "vue-cli-service serve",

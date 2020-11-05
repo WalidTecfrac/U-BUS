@@ -7,6 +7,7 @@ module.exports = {
       builderOptions: {
         "appId": "taxi.service", 
         "productName": "Taxi Service",
+        "files":["**/*","./build/icon.ico"]
       }
       }
     }
