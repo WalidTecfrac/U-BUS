@@ -16,9 +16,8 @@ async function createWindow() {
     width: 800,
     height: 600,
     show:false,
-    //frame: false,
+    frame: false,
     fullscreen:true,
-
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder
@@ -36,7 +35,7 @@ async function createWindow() {
   } else {
     createProtocol('app');
     // Load the index.html when not in development
-    win.loadURL('app://./index.html');
+    await win.loadURL('app://./index.html');
     autoUpdater.checkForUpdatesAndNotify()
   }
 }
