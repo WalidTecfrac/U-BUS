@@ -1,20 +1,21 @@
 {
-  "name": "taxiservice",
+  "name": "ubus",
   "version": "0.1.0",
   "private": true,
   "description": "test",
-  "author": {
-    "email": "taxi@tecfrac.com",
-    "name": "taxiservicepeople"
-  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "electron:build": "vue-cli-service electron:build",
+    "electron:publish": "vue-cli-service electron:build -p always",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WalidTecfrac/U-BUS"
   },
   "main": "background.js",
   "dependencies": {

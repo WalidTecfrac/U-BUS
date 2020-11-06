@@ -5,9 +5,10 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
-        "appId": "taxi.service", 
-        "productName": "Taxi Service",
-        "files":["**/*","./build/icon.ico"]
+        "appId": "u-bus", 
+        "productName": "U-BUS",
+        "files":["**/*"],
+        publish: ['github']
       }
       }
     }
