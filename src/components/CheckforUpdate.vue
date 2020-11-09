@@ -5,8 +5,9 @@
 </template>
 
 <script>
+
 export default {
-  name: "HelloWorld",
+  name: "CheckforUpdate",
   methods: {
     checkForUpdates() {
       console.log("hello");
