@@ -5,10 +5,10 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
-        "appId": "u-bus", 
+        "appId": "U-BUS", 
         "productName": "U-BUS",
         "files":["**/*"],
-        publish: ['github']
+        publish: ['github'],
       }
       }
     }

@@ -2,7 +2,7 @@
   "name": "ubus",
   "version": "0.1.2",
   "private": true,
-  "description": "test",
+  "description": "U-BUS",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -24,6 +24,7 @@
     "electron-builder": "^22.9.1",
     "electron-devtools-installer": "^3.1.1",
     "electron-updater": "^4.3.5",
+    "update-electron-app": "^2.0.1",
     "vue": "^2.6.12",
     "vue-cli-plugin-electron-builder": "^2.0.0-rc.5",
     "vue-router": "^3.2.0",

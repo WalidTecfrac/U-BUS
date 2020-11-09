@@ -3,7 +3,9 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import { autoUpdater } from "electron-updater"
 const isDevelopment = process.env.NODE_ENV !== 'production';
-
+require('update-electron-app')({
+  updateInterval: '1 hour',
+})
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
@@ -35,11 +37,9 @@ async function createWindow() {
     createProtocol('app');
     // Load the index.html when not in development
     await win.loadURL('app://./index.html');
-    console.log(autoUpdater.checkForUpdatesAndNotify());
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
-console.log(__dirname)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
