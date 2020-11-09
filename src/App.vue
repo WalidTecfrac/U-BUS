@@ -14,8 +14,10 @@
     </v-app-bar>
     <v-main>
       <router-view />
-      <CheckforUpdate />
-      <v-btn elevation="12" icon ></v-btn>
+      <CheckforUpdate class="absolute" style="bottom:2%;left:2%" />
+      <v-btn elevation="12" icon class="absolute" style="bottom:2%;right:2%">
+        <i class="mdi mdi-arrow-up-thick mdi-24px"></i>
+      </v-btn>
     </v-main>
   </v-app>
 </template>
