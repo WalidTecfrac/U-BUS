@@ -35,6 +35,7 @@ async function createWindow() {
     createProtocol('app');
     // Load the index.html when not in development
     await win.loadURL('app://./index.html');
+    console.log(autoUpdater.checkForUpdatesAndNotify());
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
