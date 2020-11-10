@@ -7,14 +7,13 @@
 </template>
 
 <script>
-const { ipcRenderer } = require('electron');
+const { ipcRenderer } = window.require("electron");
 
 export default {
   name: "CheckforUpdate",
   methods: {
     checkForUpdates() {
-      console.log("click");
-      ipcRenderer.send("check-for-update", "test");
+      ipcRenderer.send("check-for-update");
     },
   },
 };

@@ -1,6 +1,6 @@
 <template>
-  <v-app style="overscroll:hidden!important">
-    <v-app-bar max-height="48" style="width:100%">
+  <v-app style="overscroll: hidden !important">
+    <v-app-bar max-height="48" style="width: 100%">
       <v-toolbar-items>
         <v-menu transition="slide-y-transition" rounded="b-xl">
           <template v-slot:activator="{ on, attrs }">
@@ -14,10 +14,10 @@
               Services
             </v-btn>
           </template>
-          <v-list >
+          <v-list>
             <v-list-item v-for="(item, i) in services" :key="i">
-              <v-list-item-title style="text-align: center;">
-                  <i class="mdi mdi-48px" :class="item.mdiname"  ></i>
+              <v-list-item-title style="text-align: center">
+                <i class="mdi mdi-48px" :class="item.mdiname"></i>
               </v-list-item-title>
             </v-list-item>
           </v-list>
@@ -76,10 +76,8 @@ export default {
     CheckforUpdate,
   },
   methods: {
-    addNewTab() {},
+    addNewTab() {
+    },
   },
 };
 </script>
-
-<style scoped>
-</style>
