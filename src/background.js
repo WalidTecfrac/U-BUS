@@ -1,7 +1,7 @@
 import { app, protocol, BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
-import { autoUpdater } from "electron-updater"
+import { autoUpdater } from "electron-updater";
 app.setAppUserModelId("u-bus");
 app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -36,6 +36,7 @@ async function createWindow() {
     createProtocol('app');
     // Load the index.html when not in development
     await win.loadURL('app://./index.html');
+    console.log(autoUpdater.getFeedURL());
     autoUpdater.checkForUpdatesAndNotify();
     autoUpdater.downloadUpdate();
   }
