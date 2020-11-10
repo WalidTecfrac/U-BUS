@@ -1,4 +1,4 @@
-import { app, protocol, BrowserWindow } from 'electron';
+import { app, protocol, BrowserWindow, ipcMain  } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import { autoUpdater } from "electron-updater";
@@ -15,16 +15,17 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-    show:false,
-    frame: false,
-    fullscreen:true,
+    show: false,
+    frame: true,
+    fullscreen: false,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder
       ///guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+      nodeIntegration: true,
     },
   });
+  console.log(app.getVersion())
   win.once('ready-to-show', () => {
     win.show()
   })
@@ -36,9 +37,6 @@ async function createWindow() {
     createProtocol('app');
     // Load the index.html when not in development
     await win.loadURL('app://./index.html');
-    console.log(autoUpdater.getFeedURL());
-    autoUpdater.checkForUpdatesAndNotify();
-    autoUpdater.downloadUpdate();
   }
 }
 
@@ -86,3 +84,27 @@ if (isDevelopment) {
     });
   }
 }
+
+ipcMain.on("check-for-update", () => {
+  autoUpdater
+    .checkForUpdates()
+    .then((s) => {
+      autoUpdater
+        .downloadUpdate()
+        .then((a) => {
+          console.log(a);
+          autoUpdater.quitAndInstall(false, true);
+        })
+        .catch((ee) => {
+          console.log(ee);
+        });
+      console.log(s);
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+});
+
+
+
+

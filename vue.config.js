@@ -8,7 +8,12 @@ module.exports = {
         "appId": "U-BUS", 
         "productName": "U-BUS",
         "files":["**/*"],
-        publish: ['github'],
+        publish: [{
+          "provider": "github",
+          "owner": "WalidTecfrac",
+          "repo": "U-BUS",
+          "updaterCacheDirName": "ubus"
+        }],
       }
       }
     }
