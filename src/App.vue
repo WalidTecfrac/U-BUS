@@ -22,17 +22,17 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <!-- <v-btn text>
+        <v-btn text>
           <router-link to="/">Home</router-link>
         </v-btn>
         <v-btn text>
           <router-link to="/about">About</router-link>
-        </v-btn> -->
+        </v-btn>
       </v-toolbar-items>
     </v-app-bar>
     <v-main>
       <router-view />
-      <v-btn
+      <!-- <v-btn
         color="white"
         elevation="12"
         icon
@@ -43,7 +43,7 @@
         @click="addNewTab()"
       >
         <i class="mdi mdi-tab-plus mdi-24px"></i>
-      </v-btn>
+      </v-btn> -->
       <CheckforUpdate class="absolute" style="bottom: 2%; left: 2%" />
       <v-btn
         elevation="12"

@@ -1,7 +1,9 @@
-import { app, protocol, BrowserWindow, ipcMain  } from 'electron';
+import { app, protocol, BrowserWindow, ipcMain, ipcRenderer } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import { autoUpdater } from "electron-updater";
+const log = require('electron-log');
+autoUpdater.autoDownload = false;
 app.setAppUserModelId("u-bus");
 app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -17,7 +19,7 @@ async function createWindow() {
     height: 600,
     show: false,
     frame: true,
-    fullscreen: false,
+    fullscreen: true,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder
@@ -25,7 +27,6 @@ async function createWindow() {
       nodeIntegration: true,
     },
   });
-  console.log(app.getVersion())
   win.once('ready-to-show', () => {
     win.show()
   })
@@ -38,6 +39,37 @@ async function createWindow() {
     // Load the index.html when not in development
     await win.loadURL('app://./index.html');
   }
+  function sendStatusToWindow(text) {
+    log.info(text);
+  }
+  ipcMain.on("download-update", () => {
+    autoUpdater.downloadUpdate()
+    autoUpdater.on('download-progress', (info) => {
+      win.webContents.send("download-progress", info);
+    });
+    autoUpdater.once('update-downloaded', (info, releaseName) => {
+      win.webContents.send("update-downloaded", info, releaseName);
+    });
+    autoUpdater.once('error', (event, err) => {
+      win.webContents.send("update-error", event, err);
+    });
+  });
+  ipcMain.on("quit-and-install", () => {
+      autoUpdater.quitAndInstall();
+  });
+  ipcMain.on("check-for-update", () => {
+    autoUpdater
+      .checkForUpdates()
+    autoUpdater.once('update-available', (info, updateData) => {
+      win.webContents.send("update-available", info, updateData);
+    });
+    autoUpdater.once('update-not-available', (info) => {
+      win.webContents.send("update-not-available", info)
+    });
+    autoUpdater.once('error', (event, err) => {
+      win.webContents.send("update-error", event ,err);
+    });
+  });
 }
 
 // Quit when all windows are closed.
@@ -84,26 +116,3 @@ if (isDevelopment) {
     });
   }
 }
-
-ipcMain.on("check-for-update", () => {
-  autoUpdater
-    .checkForUpdates()
-    .then((s) => {
-      autoUpdater
-        .downloadUpdate()
-        .then((a) => {
-          console.log(a);
-          autoUpdater.quitAndInstall(false, true);
-        })
-        .catch((ee) => {
-          console.log(ee);
-        });
-      console.log(s);
-    })
-    .catch((e) => {
-      console.log(e);
-    });
-});
-
-
-
