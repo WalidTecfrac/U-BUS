@@ -18,7 +18,7 @@ async function createWindow() {
     width: 800,
     height: 600,
     show: false,
-    frame: true,
+    frame: false,
     fullscreen: true,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -42,6 +42,20 @@ async function createWindow() {
   function sendStatusToWindow(text) {
     log.info(text);
   }
+  ipcMain.on("close-app",() => {
+    win.close()
+  });
+  ipcMain.on("minimize-app", () => {
+    win.minimize()
+  });
+  ipcMain.on("fullscreen-app", () => {
+    if(win.fullScreen){
+      win.fullScreen = false
+    }
+    else {
+      win.fullScreen = true
+    }
+  });
   ipcMain.on("download-update", () => {
     autoUpdater.downloadUpdate()
     autoUpdater.on('download-progress', (info) => {
