@@ -1,22 +1,43 @@
 <template>
   <v-app style="overscroll: hidden !important">
-    <v-system-bar class="p-0" height="30" >
-       <v-icon style="margin: 0;">
-         <v-img :src="icon">
-         </v-img>
-         </v-icon>
+    <v-system-bar class="p-0" height="30">
+      <p class="ml-2 mt-4" style="color: black">U-BUS</p>
       <!-- <v-btn x-small text height="40" style="outline: none" @click="addNewTab()">
         <v-icon style="margin: 0;>mdi-tab-plus</v-icon>
       </v-btn> -->
       <v-spacer></v-spacer>
-      <v-btn id="minimize" tile x-small text height="30" style="outline: none" @click="minimize()" >
-        <v-icon style="margin: 0;">mdi-minus</v-icon>
+      <v-btn
+        id="minimize"
+        tile
+        x-small
+        text
+        height="30"
+        style="outline: none"
+        @click="minimize()"
+      >
+        <v-icon style="margin: 0">mdi-minus</v-icon>
       </v-btn>
-      <v-btn id="fullscreen" tile x-small text height="30" style="outline: none" @click="fullscreen()" >
-        <v-icon style="margin: 0;">mdi-checkbox-multiple-blank-outline</v-icon>
+      <v-btn
+        id="fullscreen"
+        tile
+        x-small
+        text
+        height="30"
+        style="outline: none"
+        @click="fullscreen()"
+      >
+        <v-icon style="margin: 0">mdi-checkbox-multiple-blank-outline</v-icon>
       </v-btn>
-      <v-btn id="close" tile x-small text height="30" style="outline: none" @click="close()">
-        <v-icon style="margin: 0;">mdi-close</v-icon>
+      <v-btn
+        id="close"
+        tile
+        x-small
+        text
+        height="30"
+        style="outline: none"
+        @click="close()"
+      >
+        <v-icon style="margin: 0">mdi-close</v-icon>
       </v-btn>
     </v-system-bar>
     <v-app-bar v-if="!forceUpdate" max-height="48" style="width: 100%">
@@ -49,14 +70,15 @@
         </v-btn>
       </v-toolbar-items>
     </v-app-bar>
-    <v-main v-if="!forceUpdate">
-      <router-view />
+    <v-main>
+      <router-view v-if="!forceUpdate" />
       <CheckforUpdate
-        class="absolute"
-        style="bottom: 2%; left: 2%"
-        :text="'check for update'"
+        :text="forceUpdate?'FORCE UPDATE IN PROGRESS':'CHECK FOR UPDATE'"
+        :forceUpdate="forceUpdate"
+        :class="forceUpdate ? 'force-update' : 'check-update'"
       />
       <v-btn
+        v-if="!forceUpdate"
         elevation="12"
         icon
         class="absolute"
@@ -64,16 +86,13 @@
       >
         <i class="mdi mdi-arrow-up-thick mdi-24px"></i>
       </v-btn>
+      <v-overlay :value="forceUpdate" :z-index="0" :opacity="0.8"></v-overlay>
     </v-main>
-    <v-container fill-height style="width: 100%" v-if="forceUpdate">
-      <CheckforUpdate :text="'force update in progress'" />
-    </v-container>
   </v-app>
 </template>
 
 <script>
 import CheckforUpdate from "./components/CheckforUpdate.vue";
-import icon from '../public/favicon.ico';
 
 const { ipcRenderer } = window.require("electron");
 export default {
@@ -108,13 +127,25 @@ export default {
 </script>
 
 <style>
-#close:hover{
-background-color: red;
+#close:hover {
+  background-color: red;
 }
 #minimize:hover {
-background-color:darkgray;
+  background-color: darkgray;
 }
 #fullscreen:hover {
-background-color: darkgray;
+  background-color: darkgray;
+}
+.check-update {
+  position: absolute;
+  bottom: 2%;
+  left: 2%;
+}
+.force-update {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
 }
 </style>
