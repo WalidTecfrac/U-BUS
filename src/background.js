@@ -1,7 +1,7 @@
 import { app, protocol, BrowserWindow, ipcMain, ipcRenderer } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
-import { autoUpdater } from "electron-updater";
+import { autoUpdater } from "electron-differential-updater";
 const log = require('electron-log');
 autoUpdater.autoDownload = false;
 app.setAppUserModelId("u-bus");
@@ -58,8 +58,8 @@ async function createWindow() {
   });
   ipcMain.on("download-update", () => {
     autoUpdater.downloadUpdate()
-    autoUpdater.on('download-progress', (info) => {
-      win.webContents.send("download-progress", info);
+    autoUpdater.on('download-progress', (info, progress) => {
+      win.webContents.send("download-progress", info, progress);
     });
     autoUpdater.once('update-downloaded', (info, releaseName) => {
       win.webContents.send("update-downloaded", info, releaseName);
