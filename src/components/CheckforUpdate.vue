@@ -113,13 +113,18 @@ export default {
           this.checking = false;
           this.progress = parseInt(progress.percent, 10);
           this.downloading = true;
+          console.log(["Downloading at ",progress.percent.toFixed(2),"% of ",(progress.total / (1024 * 1024)).toFixed(2)," Mb at download speed of ",(progress.bytesPerSecond / (1024 * 1024)).toFixed(2),"Mb/s",].join(""));
           this.buttonText(this.forceUpdate ? "forceUpdatetext" : "checkForUpdates",["Downloading at ",progress.percent.toFixed(2),"% of ",(progress.total / (1024 * 1024)).toFixed(2)," Mb at download speed of ",(progress.bytesPerSecond / (1024 * 1024)).toFixed(2),"Mb/s",].join(""));
         });
         ipcRenderer.once("update-downloaded", (info, release) => {
-          this.buttonText(this.forceUpdate ? "forceUpdatetext" : "checkForUpdates","update downloaded. ",this.forceUpdate ? "Quiting and Installing" : "Quit and Install");
+          this.checking = false;
+          this.buttonText(this.forceUpdate ? "forceUpdatetext" : "checkForUpdates",["update downloaded. ",this.forceUpdate ? "Quiting and Installing" : "Quit and Install"].join(""));
           this.downloading = false;
           this.updateDownloaded = true;
           this.progress = 0;
+          if(this.forceUpdate){
+            this.checkForUpdates();
+          }
         });
       } else {
         if (this.forceUpdate) {

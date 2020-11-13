@@ -105,7 +105,7 @@ export default {
         { mdiname: "mdi-printer" },
         { mdiname: "mdi-form-select" },
       ],
-      forceUpdate: true,
+      forceUpdate: false,
     };
   },
   components: {
