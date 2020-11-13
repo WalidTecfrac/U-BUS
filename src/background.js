@@ -1,7 +1,8 @@
-import { app, protocol, BrowserWindow, ipcMain, ipcRenderer } from 'electron';
+import { app, protocol, BrowserWindow, ipcMain } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import { autoUpdater } from "electron-differential-updater";
+import path from "path";
 const log = require('electron-log');
 autoUpdater.autoDownload = false;
 app.setAppUserModelId("u-bus");
@@ -18,8 +19,8 @@ async function createWindow() {
     width: 800,
     height: 600,
     show: false,
-    frame: false,
-    fullscreen: true,
+    frame: true,
+    fullscreen:false,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder
@@ -28,12 +29,14 @@ async function createWindow() {
     },
   });
   win.once('ready-to-show', () => {
-    win.show()
+    win.setMenuBarVisibility(false);
+    win.maximize();
+    win.show();
   })
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
-    if (!process.env.IS_TEST) win.webContents.openDevTools();
+    // if (!process.env.IS_TEST) win.webContents.openDevTools();
   } else {
     createProtocol('app');
     // Load the index.html when not in development

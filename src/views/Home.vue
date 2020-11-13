@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div>
     <DataTable/>
   </div>
 </template>

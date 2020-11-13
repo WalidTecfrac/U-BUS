@@ -1,10 +1,10 @@
 <template>
   <v-app style="overscroll: hidden !important">
-    <v-system-bar class="p-0" height="30">
+    <!-- <v-system-bar class="p-0" height="30">
       <p class="ml-2 mt-4" style="color: black">U-BUS</p>
-      <!-- <v-btn x-small text height="40" style="outline: none" @click="addNewTab()">
-        <v-icon style="margin: 0;>mdi-tab-plus</v-icon>
-      </v-btn> -->
+      <v-btn x-small text height="40" style="outline: none" @click="addNewTab()">
+        <v-icon style="margin: 0;">mdi-tab-plus</v-icon>
+      </v-btn>
       <v-spacer></v-spacer>
       <v-btn
         id="minimize"
@@ -39,7 +39,7 @@
       >
         <v-icon style="margin: 0">mdi-close</v-icon>
       </v-btn>
-    </v-system-bar>
+    </v-system-bar> -->
     <!-- <v-app-bar v-if="!forceUpdate" max-height="48" style="width: 100%">
       <v-toolbar-items>
         <v-btn text>
@@ -52,11 +52,11 @@
     </v-app-bar> -->
     <v-main>
       <router-view v-if="!forceUpdate" />
-      <CheckforUpdate
+      <!-- <CheckforUpdate
         :text="forceUpdate ? 'FORCE UPDATE IN PROGRESS' : 'CHECK FOR UPDATE'"
         :forceUpdate="forceUpdate"
         :class="forceUpdate ? 'force-update' : 'check-update'"
-      />
+      /> -->
       <v-btn
         v-if="!forceUpdate"
         elevation="12"
@@ -79,22 +79,22 @@ export default {
   name: "App",
   data() {
     return {
-      forceUpdate: true,
+      forceUpdate: false,
     };
   },
   components: {
     CheckforUpdate,
   },
   methods: {
-    close() {
-      ipcRenderer.send("close-app");
-    },
-    fullscreen() {
-      ipcRenderer.send("fullscreen-app");
-    },
-    minimize() {
-      ipcRenderer.send("minimize-app");
-    },
+    // close() {
+    //   ipcRenderer.send("close-app");
+    // },
+    // fullscreen() {
+    //   ipcRenderer.send("fullscreen-app");
+    // },
+    // minimize() {
+    //   ip\acRenderer.send("minimize-app");
+    // },
     //  addNewTab() {},
   },
 };

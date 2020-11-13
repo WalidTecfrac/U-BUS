@@ -1,6 +1,6 @@
 {
   "name": "ubus",
-  "version": "0.1.2",
+  "version": "0.1.0",
   "private": true,
   "description": "U-BUS",
   "scripts": {
@@ -19,17 +19,20 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@imjs/electron-differential-updater": "^5.1.2",
     "@mdi/font": "^5.8.55",
     "core-js": "^3.6.5",
     "electron": "^10.1.5",
     "electron-builder": "^22.9.1",
     "electron-devtools-installer": "^3.1.1",
+    "electron-differential-updater": "^4.3.2",
     "electron-log": "^4.3.0",
     "electron-updater": "^4.3.5",
     "electron-vue": "0.0.1",
     "tailwindcss": "^1.9.6",
     "vue": "^2.6.12",
     "vue-cli-plugin-electron-builder": "^2.0.0-rc.5",
+    "vue-excel-editor": "^1.3.90",
     "vue-router": "^3.2.0",
     "vuetify": "^2.2.11",
     "vuex": "^3.4.0"
