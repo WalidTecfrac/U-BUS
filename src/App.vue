@@ -1,45 +1,5 @@
 <template>
   <v-app style="overscroll: hidden !important">
-    <!-- <v-system-bar class="p-0" height="30">
-      <p class="ml-2 mt-4" style="color: black">U-BUS</p>
-      <v-btn x-small text height="40" style="outline: none" @click="addNewTab()">
-        <v-icon style="margin: 0;">mdi-tab-plus</v-icon>
-      </v-btn>
-      <v-spacer></v-spacer>
-      <v-btn
-        id="minimize"
-        tile
-        x-small
-        text
-        height="30"
-        style="outline: none"
-        @click="minimize()"
-      >
-        <v-icon style="margin: 0">mdi-minus</v-icon>
-      </v-btn>
-      <v-btn
-        id="fullscreen"
-        tile
-        x-small
-        text
-        height="30"
-        style="outline: none"
-        @click="fullscreen()"
-      >
-        <v-icon style="margin: 0">mdi-checkbox-multiple-blank-outline</v-icon>
-      </v-btn>
-      <v-btn
-        id="close"
-        tile
-        x-small
-        text
-        height="30"
-        style="outline: none"
-        @click="close()"
-      >
-        <v-icon style="margin: 0">mdi-close</v-icon>
-      </v-btn>
-    </v-system-bar> -->
     <!-- <v-app-bar v-if="!forceUpdate" max-height="48" style="width: 100%">
       <v-toolbar-items>
         <v-btn text>
@@ -61,18 +21,37 @@
         v-if="!forceUpdate"
         elevation="12"
         icon
-        class="absolute"
-        style="bottom: 3%; right: 2%; outline: none"
+        style="position:fixed;bottom: 3%; right: 2%; outline: none"
+        @click="scrollToTop"
+        v-show="visible"
       >
         <i class="mdi mdi-arrow-up-thick mdi-24px"></i>
       </v-btn>
       <v-overlay :value="forceUpdate" :z-index="0" :opacity="0.8"></v-overlay>
+      <ConnectivityModal
+        :showDialog="showConnectivityModal"
+        :connectivitySpeed="connectivitySpeed"
+        @closeDialog="showConnectivityModal = false"
+      />
+      <v-snackbar
+        id="alerts"
+        :timeout="3000"
+        :value="alert"
+        color="success"
+        elevation="24"
+      >
+      <i class="mdi mdi-24px mdi-wifi-check mr-3" ></i>
+        Good Internet Established. You Can Resume Your Work.
+      </v-snackbar>
     </v-main>
+    <detected-speed @network-speed="handleNetworkSpeed"></detected-speed>
   </v-app>
 </template>
 
 <script>
+import DetectedSpeed from "vue-identify-network";
 import CheckforUpdate from "./components/CheckforUpdate.vue";
+import ConnectivityModal from "./components/ConnectivityModal.vue";
 
 const { ipcRenderer } = window.require("electron");
 export default {
@@ -80,22 +59,44 @@ export default {
   data() {
     return {
       forceUpdate: false,
+      showConnectivityModal: null,
+      connectivitySpeed: null,
+      alert: false,
+      visible : false,
     };
   },
   components: {
     CheckforUpdate,
+    DetectedSpeed,
+    ConnectivityModal,
+  },
+  mounted () {
+    window.addEventListener('scroll', this.scrollListener)
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.scrollListener)
   },
   methods: {
-    // close() {
-    //   ipcRenderer.send("close-app");
-    // },
-    // fullscreen() {
-    //   ipcRenderer.send("fullscreen-app");
-    // },
-    // minimize() {
-    //   ip\acRenderer.send("minimize-app");
-    // },
-    //  addNewTab() {},
+    scrollToTop(){
+      window.scrollTo(0,0)
+    },
+    scrollListener(e) {
+      this.visible = window.scrollY > 150
+    },
+    handleNetworkSpeed(speed) {
+      if (speed < 0.5) {
+        this.showConnectivityModal = true;
+        this.connectivitySpeed = speed;
+      } else if (this.showConnectivityModal==null && speed >= 0.5) {
+        this.showConnectivityModal = false;
+      } else {
+        this.showConnectivityModal = false;
+        this.alert = true;
+        setTimeout(() => {
+          this.alert = false;
+        },3000);
+      }
+    },
   },
 };
 </script>
