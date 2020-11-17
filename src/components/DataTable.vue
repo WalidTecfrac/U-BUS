@@ -1,25 +1,98 @@
 <template>
-  <vue-excel-editor v-model="jsondata" no-paging free-select style="min-width:100%!important" filter-row>
-    <vue-excel-column field="id" label="ID" />
-    <vue-excel-column field="first_name" label="First Name" />
-    <vue-excel-column field="last_name" label="Last Name" />
-    <vue-excel-column field="email" label="E-mail" />
-    <vue-excel-column field="gender" label="Gender" />
-    <vue-excel-column field="ip_address" label="IP Address" />
-    <vue-excel-column field="Date_transaction" label="Date Of Transaction" />
-    <vue-excel-column field="Color" label="Color" />
-    <vue-excel-column field="passcode" label="Passcode" />
-    <vue-excel-column field="Job" label="Job" />
-    <vue-excel-column field="Stock Name" label="Stock Name" />
-    <vue-excel-column field="Amount" label="Amount" />
-  </vue-excel-editor>
+  <!-- <vue-excel-editor v-model="jsondata" no-paging free-select filter-row>
+    <vue-excel-column  v-for="(header,index) in tableHeaders" :field="header.name" :label="header.label" :key="index" />
+  </vue-excel-editor> -->
+  <table
+    style="
+      width: 95%;
+      margin: auto;
+      font-size: 12px;
+      border: darkgray 1px solid;
+    "
+  >
+    <tr>
+      <td
+        :id="'C' + (index + 1)"
+        v-for="(header, index) in tableHeaders"
+        :key="index"
+        style="border:lightgray 1px solid;padding:0.25rem 0.1rem;text-overflow:ellipsis;max-width: 50pxoverflow: hidden; white-space: nowrap;"
+        @dblclick="selectColumn"
+      >
+        {{ header.label.toUpperCase() }}
+      </td>
+    </tr>
+    <tbody>
+      <tr
+        :id="'R' + (index + 1)"
+        v-for="(row, index) in jsondata"
+        :key="index"
+        @click="selectRow"
+      >
+        <td
+          :id="'R' + (index + 1) + 'C' + (indexField + 1)"
+          v-for="(field, key, indexField) in row"
+          :key="indexField"
+          style="
+            border: black 1px solid;
+            padding: 0.25rem 0.1rem;
+            text-overflow: ellipsis;
+            max-width: 50px;
+            overflow: hidden;
+            white-space: nowrap;
+          "
+        >
+          {{ field }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 
 <script>
 export default {
   name: "DataTable",
+  methods: {
+    selectRow(e) {
+      const alreadySelected = document.getElementsByClassName("selected");
+      while (alreadySelected.length) {
+        alreadySelected[0].classList.remove("selected");
+      }
+      let rowNumber = e.target.id.split("C")[0];
+      document
+        .querySelectorAll('[id^="' + rowNumber + 'C"]')
+        .forEach(function (item) {
+          item.classList.add("selected");
+        });
+    },
+    selectColumn(e) {
+      const alreadySelected = document.getElementsByClassName("selected");
+      while (alreadySelected.length) {
+        alreadySelected[0].classList.remove("selected");
+      }
+      let colNumber = e.target.id.split("C")[1];
+      document
+        .querySelectorAll('[id$="C' + colNumber + '"]')
+        .forEach(function (item) {
+          item.classList.add("selected");
+        });
+    },
+  },
   data() {
     return {
+      tableHeaders: [
+        { name: "id", label: "ID" },
+        { name: "first_name", label: "First Name" },
+        { name: "last_name", label: "Last Name" },
+        { name: "email", label: "E-mail" },
+        { name: "gender", label: "Gender" },
+        { name: "ip_address", label: "IP Address" },
+        { name: "Date_transaction", label: "Date Of Transaction" },
+        { name: "Color", label: "Color" },
+        { name: "passcode", label: "Passcode" },
+        { name: "Job", label: "Job" },
+        { name: "Stock Name", label: "Stock Name" },
+        { name: "Amount", label: "Amount" },
+      ],
       jsondata: [
         {
           id: 1,
@@ -1132,3 +1205,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.selected {
+  background-color: #6699cc ;
+  color: #fff;
+}
+</style>

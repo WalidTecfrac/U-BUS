@@ -1,5 +1,5 @@
 <template>
-  <v-app style="overscroll: hidden !important">
+  <v-app >
     <!-- <v-app-bar v-if="!forceUpdate" max-height="48" style="width: 100%">
       <v-toolbar-items>
         <v-btn text>
