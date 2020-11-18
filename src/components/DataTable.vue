@@ -1,57 +1,93 @@
 <template>
-  <!-- <vue-excel-editor v-model="jsondata" no-paging free-select filter-row>
+  <!-- <vue-excel-editor v-model="records" no-paging free-select filter-row>
     <vue-excel-column  v-for="(header,index) in tableHeaders" :field="header.name" :label="header.label" :key="index" />
   </vue-excel-editor> -->
-  <table
-    style="
-      width: 95%;
-      margin: auto;
-      font-size: 12px;
-      border: darkgray 1px solid;
-    "
-  >
-    <tr>
-      <td
-        :id="'C' + (index + 1)"
-        v-for="(header, index) in tableHeaders"
-        :key="index"
-        style="border:lightgray 1px solid;padding:0.25rem 0.1rem;text-overflow:ellipsis;max-width: 50pxoverflow: hidden; white-space: nowrap;"
-        @dblclick="selectColumn"
-      >
-        {{ header.label.toUpperCase() }}
-      </td>
-    </tr>
-    <tbody>
-      <tr
-        :id="'R' + (index + 1)"
-        v-for="(row, index) in jsondata"
-        :key="index"
-        @click="selectRow"
-      >
+  <div>
+    <table
+      id="tableId"
+      style="
+        width: 95%;
+        margin: auto;
+        font-size: 12px;
+        border: darkgray 1px solid;
+      "
+    >
+      <tr>
         <td
-          :id="'R' + (index + 1) + 'C' + (indexField + 1)"
-          v-for="(field, key, indexField) in row"
-          :key="indexField"
-          style="
-            border: black 1px solid;
-            padding: 0.25rem 0.1rem;
-            text-overflow: ellipsis;
-            max-width: 50px;
-            overflow: hidden;
-            white-space: nowrap;
-          "
+          class="headers"
+          :id="'C' + (index + 1)"
+          v-for="(header, index) in tableHeaders"
+          :key="index"
+          style="border:lightgray 1px solid;padding:0.25rem 0.1rem;text-overflow:ellipsis;max-width: 50pxoverflow: hidden; white-space: nowrap;"
+          @dblclick="selectColumn"
         >
-          {{ field }}
+          {{ header.label.toUpperCase() }}
+          
         </td>
       </tr>
-    </tbody>
-  </table>
+      <tbody>
+        <tr
+          class="records"
+          :id="'R' + (index + 1)"
+          v-for="(row, index) in records"
+          :key="index"
+          @click="selectRow"
+        >
+          <td
+            :id="'R' + (index + 1) + 'C' + (indexField + 1)"
+            v-for="(field, key, indexField) in row"
+            :key="indexField"
+            style="
+              border: black 1px solid;
+              padding: 0.25rem 0.1rem;
+              text-overflow: ellipsis;
+              max-width: 50px;
+              overflow: hidden;
+              white-space: nowrap;
+            "
+          >
+            {{ field }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <v-slider
+      style="width: 25%"
+      hint="Im a hint"
+      max="200"
+      min="50"
+      v-model="zoomLevel"
+      thumb-label="always"
+    ></v-slider>
+  </div>
 </template>
 
 <script>
 export default {
   name: "DataTable",
+  watch: {
+    zoomLevel() {
+      document.getElementById("tableId").style.fontSize =
+        12 * (this.zoomLevel / 100) + "px";
+    },
+  },
   methods: {
+    sortColumn(colNumber) {
+      let columnName = this.tableHeaders[colNumber - 1].name;
+      this.records = this.records.sort(compare);
+      function compare(a, b) {
+        console.log(a)
+        const item1 = a[columnName];
+        const item2 = b[columnName];
+        let comparison = 0;
+        if (item1 > item2) {
+          comparison = 1;
+        } else if (item1 < item2) {
+          comparison = -1;
+        }
+        return comparison;
+      }
+    },
     selectRow(e) {
       const alreadySelected = document.getElementsByClassName("selected");
       while (alreadySelected.length) {
@@ -65,13 +101,14 @@ export default {
         });
     },
     selectColumn(e) {
+      this.sortColumn(e.target.id.split("C")[1]);
       const alreadySelected = document.getElementsByClassName("selected");
       while (alreadySelected.length) {
         alreadySelected[0].classList.remove("selected");
       }
       let colNumber = e.target.id.split("C")[1];
       document
-        .querySelectorAll('[id$="C' + colNumber + '"]')
+        .querySelectorAll('[id$="C' + colNumber + '"][id^="R"]')
         .forEach(function (item) {
           item.classList.add("selected");
         });
@@ -79,21 +116,26 @@ export default {
   },
   data() {
     return {
+      zoomLevel: 100,
       tableHeaders: [
-        { name: "id", label: "ID" },
-        { name: "first_name", label: "First Name" },
-        { name: "last_name", label: "Last Name" },
-        { name: "email", label: "E-mail" },
-        { name: "gender", label: "Gender" },
-        { name: "ip_address", label: "IP Address" },
-        { name: "Date_transaction", label: "Date Of Transaction" },
-        { name: "Color", label: "Color" },
-        { name: "passcode", label: "Passcode" },
-        { name: "Job", label: "Job" },
-        { name: "Stock Name", label: "Stock Name" },
-        { name: "Amount", label: "Amount" },
+        { name: "id", label: "ID", type: "Integer" },
+        { name: "first_name", label: "First Name", type: "String" },
+        { name: "last_name", label: "Last Name", type: "String" },
+        { name: "email", label: "E-mail", type: "String" },
+        { name: "gender", label: "Gender", type: "String" },
+        { name: "ip_address", label: "IP Address", type: "String" },
+        {
+          name: "Date_transaction",
+          label: "Date Of Transaction",
+          type: "Date",
+        },
+        { name: "Color", label: "Color", type: "String" },
+        { name: "passcode", label: "Passcode", type: "String" },
+        { name: "Job", label: "Job", type: "String" },
+        { name: "Stock Name", label: "Stock Name", type: "String" },
+        { name: "Amount", label: "Amount", type: "Float" },
       ],
-      jsondata: [
+      records: [
         {
           id: 1,
           first_name: "Reamonn",
@@ -1208,7 +1250,13 @@ export default {
 
 <style scoped>
 .selected {
-  background-color: #6699cc ;
+  background-color: #6699cc;
   color: #fff;
+}
+td.headers:hover {
+  background-color: #ddeaf7;
+}
+tr.records:hover {
+  background-color: #f8f8f8c7;
 }
 </style>
