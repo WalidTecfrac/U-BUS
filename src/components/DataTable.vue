@@ -3,57 +3,88 @@
     <vue-excel-column  v-for="(header,index) in tableHeaders" :field="header.name" :label="header.label" :key="index" />
   </vue-excel-editor> -->
   <div>
-    <table
-      id="tableId"
-      style="
-        width: 95%;
-        margin: auto;
-        font-size: 12px;
-        border: darkgray 1px solid;
-      "
-    >
+    <FilterModal
+      v-if="showFilterModal"
+      :data="this.filterData"
+      v-model="showFilterModal"
+      @filterwith="applyFilter"
+    />
+    <table id="tableId" style="width: 95%; margin: auto; font-size: 12px">
       <tr>
         <td
           class="headers"
-          :id="'C' + (index + 1)"
           v-for="(header, index) in tableHeaders"
           :key="index"
-          style="border:lightgray 1px solid;padding:0.25rem 0.1rem;text-overflow:ellipsis;max-width: 50pxoverflow: hidden; white-space: nowrap;"
-          @dblclick="selectColumn"
+          style="border-bottom:lightgray 1px solid;padding:0.25rem 0.1rem;text-overflow:ellipsis;max-width: 50pxoverflow: hidden; white-space: nowrap;"
+          :style="header.type == 'Number' ? 'text-align:right' : ''"
         >
-          {{ header.label.toUpperCase() }}
-          
+          <div
+            @dblclick="selectColumn"
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
+            "
+            :id="'C' + (index + 1)"
+          >
+            <div
+              class="my-auto"
+              :id="'C' + (index + 1)"
+              @dblclick="selectColumn"
+            >
+              {{ header.label.toUpperCase() }}
+            </div>
+            <i
+              :id="'filterC' + (index + 1)"
+              class="mdi mdi-filter mdi-16px ml-8 my-auto"
+              style="color: lightgray"
+              @click="prepareFilterModal"
+            ></i>
+            <div class="my-auto" style="display: flex; flex-direction: column">
+              <i
+                :id="'sortAscendingC' + (index + 1)"
+                class="mdi mdi-menu-up"
+                style="color: lightgray"
+                @click="sortColumn(index + 1, 'ascending')"
+              ></i>
+              <i
+                :id="'sortDescendingC' + (index + 1)"
+                class="mdi mdi-menu-down"
+                style="color: lightgray"
+                @click="sortColumn(index + 1, 'descending')"
+              ></i>
+            </div>
+          </div>
         </td>
       </tr>
-      <tbody>
-        <tr
-          class="records"
-          :id="'R' + (index + 1)"
-          v-for="(row, index) in records"
-          :key="index"
-          @click="selectRow"
+      <tr
+        class="records"
+        :id="'R' + (index + 1)"
+        v-for="(row, index) in recordsFormatted"
+        :key="index"
+        @click="selectRow"
+      >
+        <td
+          :id="'R' + (index + 1) + 'C' + (indexField + 1)"
+          v-for="(field, key, indexField) in row"
+          :key="indexField"
+          style="
+            padding: 0.25rem 0.1rem;
+            text-overflow: ellipsis;
+            max-width: 50px;
+            overflow: hidden;
+            white-space: nowrap;
+          "
+          :style="
+            tableHeaders[indexField].type == 'Number' ? 'text-align:right' : ''
+          "
         >
-          <td
-            :id="'R' + (index + 1) + 'C' + (indexField + 1)"
-            v-for="(field, key, indexField) in row"
-            :key="indexField"
-            style="
-              border: black 1px solid;
-              padding: 0.25rem 0.1rem;
-              text-overflow: ellipsis;
-              max-width: 50px;
-              overflow: hidden;
-              white-space: nowrap;
-            "
-          >
-            {{ field }}
-          </td>
-        </tr>
-      </tbody>
+          {{ row[tableHeaders[indexField].name] }}
+        </td>
+      </tr>
     </table>
     <v-slider
       style="width: 25%"
-      hint="Im a hint"
       max="200"
       min="50"
       v-model="zoomLevel"
@@ -63,8 +94,14 @@
 </template>
 
 <script>
+import _ from "lodash";
+import FilterModal from "./FilterModal";
+
 export default {
   name: "DataTable",
+  components: {
+    FilterModal,
+  },
   watch: {
     zoomLevel() {
       document.getElementById("tableId").style.fontSize =
@@ -72,20 +109,46 @@ export default {
     },
   },
   methods: {
-    sortColumn(colNumber) {
+    prepareFilterModal(event) {
+      let colNumber = parseInt(event.target.id.split("C")[1]);
+      this.filterData["label"] = this.tableHeaders[colNumber - 1].label;
+      this.filterData["name"] = this.tableHeaders[colNumber - 1].name;
+      this.filterData["type"] = this.tableHeaders[colNumber - 1].type;
+      this.filterData["items"] = this.records.map(
+        (value) => value[this.tableHeaders[colNumber - 1].name]
+      );
+      this.showFilterModal = true;
+    },
+    applyFilter(data) {
+      this.recordsFormatted = this.recordsFormatted.filter(e => 
+      data["filters"].includes(e[data.name]));
+    },
+    sortColumn(colNumber, sortType) {
       let columnName = this.tableHeaders[colNumber - 1].name;
-      this.records = this.records.sort(compare);
-      function compare(a, b) {
-        console.log(a)
-        const item1 = a[columnName];
-        const item2 = b[columnName];
-        let comparison = 0;
-        if (item1 > item2) {
-          comparison = 1;
-        } else if (item1 < item2) {
-          comparison = -1;
+      if (this.selectedColumnsToSort[colNumber - 1].sortType == sortType) {
+        this.selectedColumnsToSort[colNumber - 1].sortType = "none";
+        this.selectedColumnsToSort[colNumber - 1].order = -1;
+        this.recordsFormatted = _.cloneDeep(this.records);
+      } else {
+        this.selectedColumnsToSort[colNumber - 1].sortType = sortType;
+        this.selectedColumnsToSort[this.selectedColumnsToSort.length - 1]
+          .maxOrder++;
+        this.selectedColumnsToSort[
+          colNumber - 1
+        ].order = this.selectedColumnsToSort[
+          this.selectedColumnsToSort.length - 1
+        ].maxOrder;
+        this.recordsFormatted =
+          sortType == "ascending"
+            ? this.recordsFormatted.sort(compare)
+            : this.recordsFormatted.sort(compare).reverse();
+        function compare(a, b) {
+          return a[columnName] > b[columnName]
+            ? 1
+            : a[columnName] < b[columnName]
+            ? -1
+            : 0;
         }
-        return comparison;
       }
     },
     selectRow(e) {
@@ -101,40 +164,58 @@ export default {
         });
     },
     selectColumn(e) {
-      this.sortColumn(e.target.id.split("C")[1]);
       const alreadySelected = document.getElementsByClassName("selected");
       while (alreadySelected.length) {
         alreadySelected[0].classList.remove("selected");
       }
       let colNumber = e.target.id.split("C")[1];
-      document
-        .querySelectorAll('[id$="C' + colNumber + '"][id^="R"]')
-        .forEach(function (item) {
-          item.classList.add("selected");
-        });
+      if (this.selectedColumns == colNumber) {
+        document
+          .querySelectorAll('[id$="C' + colNumber + '"][id^="R"]')
+          .forEach(function (item) {
+            item.classList.remove("selected");
+          });
+        this.selectedColumns = "";
+      } else {
+        this.selectedColumns = colNumber;
+        document
+          .querySelectorAll('[id$="C' + colNumber + '"][id^="R"]')
+          .forEach(function (item) {
+            item.classList.add("selected");
+          });
+      }
     },
+  },
+  mounted() {
+    this.recordsFormatted = _.cloneDeep(this.records);
+    this.selectedColumnsToSort = Array.from(
+      { length: this.tableHeaders.length },
+      () => ({ sortType: "none", order: -1 })
+    );
+    this.selectedColumnsToSort.push({ maxOrder: -1 });
   },
   data() {
     return {
       zoomLevel: 100,
       tableHeaders: [
-        { name: "id", label: "ID", type: "Integer" },
+        { name: "id", label: "ID", type: "Number" },
         { name: "first_name", label: "First Name", type: "String" },
         { name: "last_name", label: "Last Name", type: "String" },
         { name: "email", label: "E-mail", type: "String" },
         { name: "gender", label: "Gender", type: "String" },
         { name: "ip_address", label: "IP Address", type: "String" },
+        { name: "Color", label: "Color", type: "String" },
+        { name: "passcode", label: "Passcode", type: "String" },
+        { name: "Job", label: "Job", type: "String" },
+        { name: "Stock Name", label: "Stock Name", type: "String" },
         {
           name: "Date_transaction",
           label: "Date Of Transaction",
           type: "Date",
         },
-        { name: "Color", label: "Color", type: "String" },
-        { name: "passcode", label: "Passcode", type: "String" },
-        { name: "Job", label: "Job", type: "String" },
-        { name: "Stock Name", label: "Stock Name", type: "String" },
-        { name: "Amount", label: "Amount", type: "Float" },
+        { name: "Amount", label: "Amount", type: "Money" },
       ],
+      recordsFormatted: [],
       records: [
         {
           id: 1,
@@ -1243,6 +1324,10 @@ export default {
           Amount: "$602347.52",
         },
       ],
+      selectedColumns: "",
+      selectedColumnsToSort: [],
+      showFilterModal: false,
+      filterData: {},
     };
   },
 };
@@ -1250,7 +1335,7 @@ export default {
 
 <style scoped>
 .selected {
-  background-color: #6699cc;
+  background-color: #9abbdd;
   color: #fff;
 }
 td.headers:hover {
@@ -1258,5 +1343,8 @@ td.headers:hover {
 }
 tr.records:hover {
   background-color: #f8f8f8c7;
+}
+i:hover {
+  color: #000000c7 !important;
 }
 </style>

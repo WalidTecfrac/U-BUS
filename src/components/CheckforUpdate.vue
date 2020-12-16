@@ -113,7 +113,6 @@ export default {
       if (id == "forceUpdatetext") {
         document.getElementById(id).innerHTML = message.toUpperCase();
       } else {
-        console.log(document.getElementById(id));
         document.getElementById(
           id
         ).children[0].innerHTML = message.toUpperCase();
